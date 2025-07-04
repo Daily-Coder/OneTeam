@@ -1,5 +1,6 @@
 'use client'
 import { useAuth } from "@/context/authContext";
+import { UserProvider } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 
@@ -22,7 +23,9 @@ export default function ProtectedLayout({children}:{children:ReactNode}){
     return(
         loading ? <main className="w-full h-screen flex items-center justify-center">Loading...</main> :
         <>
+        <UserProvider>
             {children}
+        </UserProvider>
         </>
     )
 }
