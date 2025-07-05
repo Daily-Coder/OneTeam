@@ -1,14 +1,23 @@
-'use client'
+'use client';
 
-import { useAuth } from "@/context/authContext"
+import EmployeeSidebar from "@/components/employee/EmployeeSidebar";
+import CheckInOut from "@/components/employee/CheckInOut";
+import TeamOverview from "@/components/employee/TeamOverview";
+import ProfileSection from "@/components/employee/ProfileSection";
+import { useState } from "react";
 
-export default function Dashboard(){
-    const {signOut}=useAuth();
+export default function EmployeeDashboard() {
+  const [activeSection, setActiveSection] = useState("checkin");
 
-    return(
-        <main className="p-10">
-            This is employee dashboard
-            <button className="bg-blue-600 text-white font-bold px-7 py-3 rounded-md mx-10" onClick={()=>signOut()}>SignOut</button>
-        </main>
-    )
+  return (
+    <div className="flex min-h-screen bg-blue-50">
+      <EmployeeSidebar active={activeSection} setActive={setActiveSection} />
+
+      <main className="flex-1 p-6">
+        {activeSection === "checkin" && <CheckInOut />}
+        {activeSection === "teams" && <TeamOverview />}
+        {activeSection === "profile" && <ProfileSection />}
+      </main>
+    </div>
+  );
 }
