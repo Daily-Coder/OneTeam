@@ -4,12 +4,13 @@ import { firebaseConfig } from "@/config/fbConfig"
 import { onAuthStateChanged, User } from "firebase/auth"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { signInWithEmailAndPassword } from "firebase/auth"
+import { FirebaseError } from "firebase/app"
 
 
 type IAuthContext = {
     user: User | null,
     signinWithEmailPass: (email: string, pass: string) => void,
-    signInError:string|null,
+    signInError:FirebaseError|null,
     signOut:()=>void
 }
 
@@ -23,13 +24,13 @@ const AuthContext = createContext<IAuthContext>({
 export function AuthProvider({ children }: { children: ReactNode }) {
 
     const [user, setUser] = useState<User | null>(null)
-    const [signInError,setSignInError]=useState<string|null>(null)
+    const [signInError,setSignInError]=useState<FirebaseError|null>(null)
     const [loading,setLoading]=useState<boolean>(true)
     function signinWithEmailPass(email: string, pass: string) {
         const instance=firebaseConfig.getInstance();
         signInWithEmailAndPassword(instance.getAuth(),email,pass)
         .catch(err=>{
-            setSignInError(err.message)
+            setSignInError(err)
         })
     }
     async function signOut(){

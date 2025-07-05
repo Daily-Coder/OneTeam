@@ -1,30 +1,24 @@
 'use client'
 import Image from "next/image";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useAuth } from "@/context/authContext"
-import { sign } from "crypto";
-import { log } from "console";
+import { cleanAuthError } from "@/helper/firebaseErrors";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const {signinWithEmailPass,signInError}=useAuth();
-
-  const handleLogin = (e) => {
+  const { signinWithEmailPass, signInError } = useAuth();
+  const [processing,setProcessing]=useState<boolean>(false)
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login", { email, password });
-    try{
-        const user =  signinWithEmailPass(email,password);
-        console.log(signInError);
-        
-        if(signInError !== null){
-            alert("Invalid Credentials");
-        }
-        else{
-            alert("Login Successfully");
-        }
-    }catch(error){
-        console.log(error);
+    try {
+      setProcessing(true)
+      signinWithEmailPass(email, password);
+    } catch (error) {
+      console.log(error);
+    }
+    finally{
+      setProcessing(false)
     }
   };
 
@@ -53,7 +47,7 @@ export default function LoginPage() {
             />
           </div>
           <h2 className="text-2xl font-bold text-[#0A66C2] mb-6 text-center">Login</h2>
-          <form onSubmit={(e)=>handleLogin(e)} className="space-y-4">
+          <form onSubmit={(e) => handleLogin(e)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[#0A66C2]">Email</label>
               <input
@@ -74,11 +68,16 @@ export default function LoginPage() {
                 required
               />
             </div>
+            {
+              signInError && <p className="text-right text-[12px] font-medium text-red-500">{cleanAuthError(signInError)}</p>
+            }
             <button
               type="submit"
               className="w-full py-2 px-4 rounded-lg bg-[#34A853] text-white font-semibold hover:bg-green-600 transition"
             >
-              Login
+              {
+                processing ? <p>Logging In ...</p>: <p>Login</p>
+              }
             </button>
           </form>
         </div>
