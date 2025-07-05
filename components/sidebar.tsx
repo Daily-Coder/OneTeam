@@ -9,11 +9,11 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
 const sidebarLinks = [
-  { href: "/admin/dashboard", label: "Dashboard" },
-  { href: "/admin/employees", label: "Employees" },
-  { href: "/admin/teams", label: "Teams" },
-  { href: "/admin/leaves", label: "Leaves" },
-  { href: "/admin/tickets", label: "Tickets" },
+  { href: "/admin-dashboard/dashboard", label: "Dashboard" },
+  { href: "/admin-dashboard/employees", label: "Employees" },
+  { href: "/admin-dashboard/teams", label: "Teams" },
+  { href: "/admin-dashboard/leaves", label: "Leaves" },
+  { href: "/admin-dashboard/tickets", label: "Tickets" },
 ];
 
 export default function Sidebar() {
