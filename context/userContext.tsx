@@ -3,6 +3,7 @@ import { firestoreConfig } from "@/config/firestoreConfig";
 import { collection, doc, DocumentData, getDoc } from "firebase/firestore"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useAuth } from "./authContext";
+import CompleteAdminProfile from "@/components/basic/completeAdminProfile";
 
 
 type IUserContext={
@@ -42,7 +43,7 @@ export function UserProvider({children}:{children:ReactNode}){
 
     return(
         !userDetailsFetched ? <main>Fetching User Details...</main> : 
-        userDetails==null ? <main>Give your details first</main> :
+        userDetails==null ? <CompleteAdminProfile setUserDetails={setUserDetails} setUserDetailsFetched={setUserDetailsFetched}/> :
         <UserContext.Provider value={{userDetails}}>
             {children}
         </UserContext.Provider>
