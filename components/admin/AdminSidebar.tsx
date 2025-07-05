@@ -7,11 +7,14 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { adminRoutes } from "@/helper/adminHelper";
 import { useAdminRoute } from "@/context/adminRouteContext";
+import { useAuth } from "@/context/authContext";
 
 export default function AdminSidebar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const {activeRoute,setActiveRoute}=useAdminRoute();
+  const {signOut}=useAuth();
+
   return (
     <>
       {/* Mobile Navbar */}
@@ -42,8 +45,9 @@ export default function AdminSidebar() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 h-screen bg-white border-r p-4 shadow-sm">
         <div className="font-bold text-xl mb-6">Admin Panel</div>
-        <nav className="space-y-2">
-          {adminRoutes.map((route, index) => {
+        <nav className="space-y-2 h-full flex flex-col justify-between ">
+          <div>
+            {adminRoutes.map((route, index) => {
             return (
               <div key={index} className="px-5 py-3 rounded-md flex gap-3 items-center" onClick={() => setActiveRoute(route.value)} style={{backgroundColor:activeRoute===route.value ? '#eeeeee':'inherit'}}>
                 <route.icon size={24}/>
@@ -51,6 +55,10 @@ export default function AdminSidebar() {
               </div>
             )
           })}
+          </div>
+          <div className="border-t-[1px] border-[#ebebeb] cursor-pointer" onClick={()=>signOut()}>
+            <p className="font-medium text-[18px] text-center py-3">SignOut</p>
+          </div>
         </nav>
       </aside>
 

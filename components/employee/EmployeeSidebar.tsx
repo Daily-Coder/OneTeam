@@ -1,6 +1,4 @@
 'use client';
-
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/navigation";
 
@@ -12,11 +10,6 @@ interface Props {
 export default function EmployeeSidebar({ active, setActive }: Props) {
   const { signOut } = useAuth();
   const router = useRouter();
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.push("/signin");
-  };
 
   return (
     <aside className="w-64 min-h-screen bg-white border-r p-4 flex flex-col justify-between">
@@ -32,9 +25,9 @@ export default function EmployeeSidebar({ active, setActive }: Props) {
         </button>
       </nav>
 
-      <Button onClick={handleSignOut} variant="destructive" className="w-full">
-        Sign Out
-      </Button>
+      <div className="border-t-[1px] border-[#ebebeb] cursor-pointer" onClick={() => signOut()}>
+        <p className="font-medium text-[18px] text-center py-3">SignOut</p>
+      </div>
     </aside>
   );
 }
