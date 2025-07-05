@@ -1,4 +1,5 @@
 'use client'
+import Loading from "@/components/basic/loading";
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
@@ -20,7 +21,7 @@ export default function AuthLayout({children}:{children:ReactNode}){
 
 
     return(
-        loading ? <main className="w-full h-screen flex items-center justify-center">Loading...</main> :
+        loading ? <Loading/> :
         <>
             {children}
         </>

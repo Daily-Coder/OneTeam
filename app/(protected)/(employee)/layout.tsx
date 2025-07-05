@@ -1,4 +1,5 @@
 'use client'
+import Loading from "@/components/basic/loading";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
@@ -19,7 +20,7 @@ export default function EmployeeLayout({children}:{children:ReactNode}){
         }
     },[userDetails])
     return(
-        loading ? <main className="w-full h-screen flex items-center justify-center">Loading...</main> :
+        loading ? <Loading/> :
         <>
             {children}
         </>
