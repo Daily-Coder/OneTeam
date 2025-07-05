@@ -1,21 +1,23 @@
 'use client';
 
 import { useAuth } from "@/context/authContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   CalendarCheck,
   BarChart2,
   Ticket,
   Activity,
   LucideIcon,
+  Users,
 } from "lucide-react";
 import { useUser } from "@/context/userContext";
 import { collection, DocumentData, getDocs, query, where } from "firebase/firestore";
 import { firestoreConfig } from "@/config/firestoreConfig";
 import AddNewEmployee from "./manageEmployee/AddNewEmployee";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 // Types
 type Stat = {
@@ -34,6 +36,11 @@ type EmployeeProfile = {
   name: string;
   stats: Stat[];
   activities: ActivityLog[];
+};
+
+type DepartmentData = {
+  name: string;
+  count: number;
 };
 
 const employeeData: Record<string, EmployeeProfile> = {
@@ -74,6 +81,9 @@ const employeeData: Record<string, EmployeeProfile> = {
   },
 };
 
+// Colors for the chart
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF6B6B'];
+
 export default function EmployeeDashboard() {
   const [searchId, setSearchId] = useState<string>("");
   const [selectedId, setSelectedId] = useState<string>("EMP001");
@@ -102,6 +112,21 @@ export default function EmployeeDashboard() {
     })()
   },[])
 
+  // Process employees data to get department statistics
+  const departmentData = useMemo(() => {
+    const departmentCount: Record<string, number> = {};
+    
+    employees.forEach(employee => {
+      const department = employee.department || 'Unknown Department';
+      departmentCount[department] = (departmentCount[department] || 0) + 1;
+    });
+
+    return Object.entries(departmentCount).map(([name, count]) => ({
+      name,
+      count
+    })).sort((a, b) => b.count - a.count); // Sort by count descending
+  }, [employees]);
+
   return (
     <main className="min-h-screen w-full bg-muted p-6">
       <div className="flex justify-between items-center mb-6">
@@ -126,8 +151,113 @@ export default function EmployeeDashboard() {
         </Button>
       </div> */}
 
-      <div className="w-full flex justify-end">
+      <div className="w-full flex justify-end mb-6">
         <AddNewEmployee/>
+      </div>
+
+      {/* Department Chart Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Bar Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Employees by Department (Bar Chart)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {employeesFetched && departmentData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={departmentData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="name" 
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    fontSize={12}
+                  />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value: number) => [`${value} employees`, 'Count']}
+                    labelFormatter={(label: string) => `Department: ${label}`}
+                  />
+                  <Bar dataKey="count" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-[300px] text-gray-500">
+                {employeesFetched ? 'No employees found' : 'Loading employees...'}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Pie Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart2 className="w-5 h-5" />
+              Department Distribution (Pie Chart)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {employeesFetched && departmentData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={departmentData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="count"
+                  >
+                    {departmentData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value: number) => [`${value} employees`, 'Count']}
+                    labelFormatter={(label: string) => `Department: ${label}`}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-[300px] text-gray-500">
+                {employeesFetched ? 'No employees found' : 'Loading employees...'}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Department Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {departmentData.map((dept, index) => (
+          <Card key={dept.name} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{dept.name}</p>
+                  <p className="text-2xl font-bold text-gray-900">{dept.count}</p>
+                  <p className="text-xs text-gray-500">employees</p>
+                </div>
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: COLORS[index % COLORS.length] + '20' }}
+                >
+                  <Users 
+                    className="w-6 h-6" 
+                    style={{ color: COLORS[index % COLORS.length] }}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </main>
   );
