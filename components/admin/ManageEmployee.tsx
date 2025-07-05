@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from "@/context/authContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +12,10 @@ import {
   Activity,
   LucideIcon,
 } from "lucide-react";
+import { useUser } from "@/context/userContext";
+import { collection, DocumentData, getDocs, query, where } from "firebase/firestore";
+import { firestoreConfig } from "@/config/firestoreConfig";
+import AddNewEmployee from "./manageEmployee/AddNewEmployee";
 
 // Types
 type Stat = {
@@ -32,7 +36,6 @@ type EmployeeProfile = {
   activities: ActivityLog[];
 };
 
-// Dummy Employee Data
 const employeeData: Record<string, EmployeeProfile> = {
   EMP001: {
     name: "Gourav",
@@ -72,29 +75,42 @@ const employeeData: Record<string, EmployeeProfile> = {
 };
 
 export default function EmployeeDashboard() {
-  const { signOut } = useAuth();
   const [searchId, setSearchId] = useState<string>("");
   const [selectedId, setSelectedId] = useState<string>("EMP001");
+  const {userDetails}=useUser();
+  const [employees,setEmployees]=useState<DocumentData[]>([])
+  const [employeesFetched,setEmployeesFetched]=useState<boolean>(false)
+  const {user}=useAuth();
 
-  const employee = employeeData[selectedId];
+  useEffect(()=>{
+    (async()=>{
+      const instance=firestoreConfig.getInstance()
+      try{
+        const docSnap=await getDocs(query(collection(instance.getDb(),'Users'),where('organization_name','==',userDetails?.organization_name)))
+        const temp:DocumentData[]=[]
+        docSnap.docs.map(doc=>{
+          if(doc.id!=user?.uid){
+            temp.push({id:doc.id,...doc.data()})
+          }
+        })
+        setEmployees(temp)
+        setEmployeesFetched(true)
+      }
+      catch(err){
+        alert("something went wrong")
+      }
+    })()
+  },[])
 
   return (
     <main className="min-h-screen w-full bg-muted p-6">
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-foreground">
-          Welcome{employee ? `, ${employee.name} 👋` : ""}
+          Welcome {userDetails?.name.split(" ")[0]} 👋
         </h1>
-        <Button
-          onClick={signOut}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          Sign Out
-        </Button>
       </div>
 
-      {/* Search Section */}
-      <div className="flex gap-4 items-center mb-8">
+      {/* <div className="flex gap-4 items-center mb-8">
         <Input
           type="text"
           placeholder="Enter Employee ID (e.g., EMP001)"
@@ -108,49 +124,11 @@ export default function EmployeeDashboard() {
         >
           Search
         </Button>
+      </div> */}
+
+      <div className="w-full flex justify-end">
+        <AddNewEmployee/>
       </div>
-
-      {/* Conditional Rendering */}
-      {employee ? (
-        <>
-          {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {employee.stats.map(({ icon: Icon, label, value }) => (
-              <Card key={label} className="shadow-sm">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{label}</p>
-                    <p className="text-xl font-bold text-foreground">{value}</p>
-                  </div>
-                  <Icon className="h-6 w-6 text-muted-foreground" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Activity Feed */}
-          <div className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
-            <Activity className="h-5 w-5" />
-            Recent Activity
-          </div>
-
-          <div className="space-y-4">
-            {employee.activities.map((act, index) => (
-              <Card key={index} className="shadow-sm">
-                <CardContent className="p-4 space-y-1">
-                  <p className="text-md font-medium text-foreground">{act.title}</p>
-                  <p className="text-sm text-muted-foreground">{act.description}</p>
-                  <p className="text-xs text-muted-foreground">{act.date}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className="text-center text-muted-foreground mt-12 text-lg">
-          No data found for <span className="font-semibold">{searchId}</span>
-        </div>
-      )}
     </main>
   );
 }

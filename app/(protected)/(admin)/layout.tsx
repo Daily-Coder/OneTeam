@@ -9,11 +9,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
 
     const { userDetails } = useUser()
-    const [loading, setLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
     const router = useRouter()
 
     useEffect(() => {
-        if (userDetails && userDetails.role != 'admin') {
+        if(!userDetails) return;
+        if (userDetails.role != 'admin') {
             router.replace("/dashboard");
         }
         else {
