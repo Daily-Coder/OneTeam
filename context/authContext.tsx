@@ -5,6 +5,7 @@ import { onAuthStateChanged, User } from "firebase/auth"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { FirebaseError } from "firebase/app"
+import Loading from "@/components/basic/loading"
 
 
 type IAuthContext = {
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },[onAuthStateChanged])
 
     return (
-        loading ? <main className="w-full h-screen flex items-center justify-center">Loading...</main> :
+        loading ? <Loading/> :
         <AuthContext.Provider value={{ user, signinWithEmailPass,signInError,signOut }}>
             {children}
         </AuthContext.Provider>

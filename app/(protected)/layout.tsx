@@ -1,4 +1,5 @@
 'use client'
+import Loading from "@/components/basic/loading";
 import { useAuth } from "@/context/authContext";
 import { UserProvider } from "@/context/userContext";
 import { useRouter } from "next/navigation";
@@ -21,7 +22,7 @@ export default function ProtectedLayout({children}:{children:ReactNode}){
 
 
     return(
-        loading ? <main className="w-full h-screen flex items-center justify-center">Loading...</main> :
+        loading ? <Loading/> :
         <>
         <UserProvider>
             {children}
