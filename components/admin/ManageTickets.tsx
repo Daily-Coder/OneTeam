@@ -66,36 +66,6 @@ export default function ManageTickets() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Manage Tickets</h1>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 text-white hover:bg-blue-700">
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Create Ticket
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingTicket ? 'Edit Ticket' : 'Create New Ticket'}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <Input
-                placeholder="Ticket Title"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-              />
-              <Textarea
-                placeholder="Ticket Description"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-              />
-            </div>
-            <DialogFooter>
-              <Button onClick={handleSave}>
-                {editingTicket ? 'Update' : 'Create'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
 
       {/* Ticket List */}

@@ -43,7 +43,7 @@ export default function AdminSidebar() {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 h-screen bg-white border-r p-4 shadow-sm">
+      <aside className="hidden md:flex flex-col w-64 h-screen bg-white border-r p-4 shadow-sm md:fixed">
         <div className="font-bold text-xl mb-6">Admin Panel</div>
         <nav className="space-y-2 h-full flex flex-col justify-between ">
           <div>

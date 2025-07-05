@@ -10,10 +10,6 @@ export default function ManageApplications() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Manage Applications</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-          <FilePlus className="h-4 w-4 mr-2" />
-          Add Application
-        </Button>
       </div>
 
       {/* Applications Summary */}
