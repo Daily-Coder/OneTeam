@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Pencil, PlusCircle, Trash } from 'lucide-react';
+import AddNewTeam from './manageTeams/AddNewTeam';
 
 type Team = {
   id: number;
@@ -59,36 +60,7 @@ export default function ManageTeams() {
       {/* Page Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Manage Teams</h1>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 text-white hover:bg-blue-700">
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add New Team
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingTeam ? 'Edit Team' : 'Add New Team'}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <Input
-                placeholder="Team Name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <Input
-                placeholder="Team Description"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-              />
-            </div>
-            <DialogFooter>
-              <Button onClick={handleAddOrUpdate}>
-                {editingTeam ? 'Update' : 'Add'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <AddNewTeam/>
       </div>
 
       {/* Teams List */}
@@ -98,52 +70,7 @@ export default function ManageTeams() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team) => (
-            <Card key={team.id} className="shadow-sm">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-lg font-semibold text-foreground">{team.name}</h3>
-                  <div className="flex gap-2">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(team)}>
-                          <Pencil className="h-4 w-4 text-blue-600" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Edit Team</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <Input
-                            placeholder="Team Name"
-                            value={form.name}
-                            onChange={(e) => setForm({ ...form, name: e.target.value })}
-                          />
-                          <Input
-                            placeholder="Team Description"
-                            value={form.description}
-                            onChange={(e) => setForm({ ...form, description: e.target.value })}
-                          />
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleAddOrUpdate}>Update</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(team.id)}
-                    >
-                      <Trash className="h-4 w-4 text-red-600" />
-                    </Button>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">{team.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+          
         </div>
       )}
     </main>

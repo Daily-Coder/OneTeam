@@ -120,3 +120,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+::-webkit-scrollbar {
+  height: 4px;             /* horizontal scrollbar height */
+  width: 8px;              /* vertical scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;     /* light slate (tailwind slate-100) */
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3b82f6;     /* tailwind blue-500 */
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;     /* tailwind blue-600 */
+}
+
+/* Optional: only show scrollbar when scrolling (for WebKit browsers) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
