@@ -1,11 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
-import { Pencil, PlusCircle, Trash } from 'lucide-react';
 import AddNewTeam from './manageTeams/AddNewTeam';
 
 type Team = {

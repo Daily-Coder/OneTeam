@@ -26,10 +26,7 @@ function getDeadlineStatus(deadline: Timestamp | undefined) {
   return { label: 'Upcoming', color: 'bg-green-100 text-green-600' };
 }
 
-const teams = [
-  { id: 1, name: "UI Team", manager: "Raj Mehra", members: 5 },
-  { id: 2, name: "API Team", manager: "Sonal Gupta", members: 4 },
-];
+
 
 export default function TeamOverview() {
 
@@ -51,7 +48,7 @@ export default function TeamOverview() {
         console.log("error while getting teams", err);
       }
     })()
-  }, [])
+  })
   return (
     <div className="bg-white p-6 rounded-2xl">
       <h2 className="text-2xl font-bold text-blue-700 mb-6 border-b pb-2">

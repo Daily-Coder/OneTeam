@@ -72,7 +72,7 @@ export default function ManageTickets() {
     Critical: 'bg-red-100 text-red-600',
   };
 
-  const formatDate = (ts?: any) =>
+  const formatDate = (ts?:any) =>
     ts?.toDate().toLocaleDateString('en-IN', {
       day: 'numeric',
       month: 'short',

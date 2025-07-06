@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,16 +25,16 @@ interface TicketData {
   category: string;
 }
 
-interface Ticket {
-  id: string;
-  title: string;
-  description: string;
-  priority: string;
-  category: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// interface Ticket {
+//   id: string;
+//   title: string;
+//   description: string;
+//   priority: string;
+//   category: string;
+//   status: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
 
 export default function TicketsSection(): React.JSX.Element {
   const [ticketData, setTicketData] = useState<TicketData>({
@@ -159,7 +158,7 @@ export default function TicketsSection(): React.JSX.Element {
         console.log("error while fetching tickets", err)
       }
     })()
-  }, [])
+  })
   return (
     <div className="space-y-6">
       {/* Raise Ticket Section */}

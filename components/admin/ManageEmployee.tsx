@@ -2,14 +2,11 @@
 
 import { useAuth } from "@/context/authContext";
 import { useEffect, useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   CalendarCheck,
   BarChart2,
   Ticket,
-  Activity,
   LucideIcon,
   Users,
 } from "lucide-react";
@@ -38,10 +35,10 @@ type EmployeeProfile = {
   activities: ActivityLog[];
 };
 
-type DepartmentData = {
-  name: string;
-  count: number;
-};
+// type DepartmentData = {
+//   name: string;
+//   count: number;
+// };
 
 const employeeData: Record<string, EmployeeProfile> = {
   EMP001: {
@@ -85,8 +82,8 @@ const employeeData: Record<string, EmployeeProfile> = {
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF6B6B'];
 
 export default function EmployeeDashboard() {
-  const [searchId, setSearchId] = useState<string>("");
-  const [selectedId, setSelectedId] = useState<string>("EMP001");
+  // const [searchId, setSearchId] = useState<string>("");
+  // const [selectedId, setSelectedId] = useState<string>("EMP001");
   const {userDetails}=useUser();
   const [employees,setEmployees]=useState<DocumentData[]>([])
   const [employeesFetched,setEmployeesFetched]=useState<boolean>(false)
@@ -107,7 +104,8 @@ export default function EmployeeDashboard() {
         setEmployeesFetched(true)
       }
       catch(err){
-        alert("something went wrong")
+        alert("something went wrong");
+        console.log(err);
       }
     })()
   },[])

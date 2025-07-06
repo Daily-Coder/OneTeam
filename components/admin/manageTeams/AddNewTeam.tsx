@@ -2,7 +2,7 @@
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
+  
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -18,9 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useMemo, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import {  useState } from "react"
 import { DocumentData } from "firebase-admin/firestore"
 import { Textarea } from "@/components/ui/textarea"
 import { TfiControlBackward } from "react-icons/tfi";
@@ -122,7 +120,7 @@ export default function AddNewTeam() {
                                 setEmployeesFetched(true)
                             }
                             catch (err) {
-                                console.log("error while fetching employees for creating new team")
+                                console.log("error while fetching employees for creating new team",err)
                             }
                         }}>
                             <SelectTrigger className="w-full">
