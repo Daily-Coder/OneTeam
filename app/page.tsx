@@ -13,7 +13,7 @@ export default function Home() {
       <header className="flex justify-between items-center max-w-6xl mx-auto mb-12">
         <div className="flex items-center gap-2">
           <Image src="/assets/OneTeamlogoFinal.jpeg" alt="oneTeam Logo" width={40} height={40} />
-          <h1 className="text-xl font-bold text-[#0A66C2]">oneTeam</h1>
+          <h1 className="text-xl font-bold text-[#0A66C2]">OneTeam</h1>
         </div>
         <Link href="/signin">
           <Button className="rounded-xl px-5 py-2 shadow-md text-base bg-[#34A853] text-white hover:bg-green-600">
@@ -30,7 +30,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          Build, Collaborate, Win — with <span className="text-[#34A853]">oneTeam</span>
+          Build, Collaborate, Win — with <span className="text-[#34A853]">OneTeam</span>
         </motion.h1>
         <motion.p
           className="text-lg text-gray-600"

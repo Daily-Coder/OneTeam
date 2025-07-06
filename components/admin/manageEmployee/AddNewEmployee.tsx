@@ -141,10 +141,10 @@ export default function AddNewEmployee() {
                         <SelectValue placeholder="Select Department" />
                     </SelectTrigger>
                     <SelectContent onSelect={(e) => console.log(e)}>
-                        <SelectItem value="system">Developer</SelectItem>
-                        <SelectItem value="light">DevOps</SelectItem>
-                        <SelectItem value="ui/ux">{`UI/UX (User Interface/User Experience)`}</SelectItem>
-                        <SelectItem value="marketing">Marketing</SelectItem>
+                        <SelectItem value="Development">Developer</SelectItem>
+                        <SelectItem value="DevOps">DevOps</SelectItem>
+                        <SelectItem value="UI/UX">{`UI/UX (User Interface/User Experience)`}</SelectItem>
+                        <SelectItem value="Marketing">Marketing</SelectItem>
                         <SelectItem value="HR">Human Resource</SelectItem>
                     </SelectContent>
                 </Select>
