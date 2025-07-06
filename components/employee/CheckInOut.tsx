@@ -1,26 +1,97 @@
 'use client';
 
-import { useState } from "react";
+import { firestoreConfig } from "@/config/firestoreConfig";
+import { useAuth } from "@/context/authContext";
+import { useUser } from "@/context/userContext";
+import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 export default function CheckInOut() {
-  const [status, setStatus] = useState("Not Checked In");
+  const [processing, setProcessing] = useState({
+    checkIn: false,
+    checkOut: false
+  })
+  const [loading, setLoading] = useState<boolean>(true)
+  const [stats, setStats] = useState({
+    checkedIn: false,
+    checkedOut: false
+  })
 
-  const handleCheckIn = () => setStatus("Checked In");
-  const handleCheckOut = () => setStatus("Checked Out");
+  const { user } = useAuth();
+  const { userDetails } = useUser();
+
+
+  async function checkIn() {
+    if (processing.checkIn === true) return;
+    setProcessing(prev => ({ ...prev, checkIn: true }))
+    const instance = firestoreConfig.getInstance()
+    try {
+      console.log("pocess start")
+      await addDoc(collection(instance.getDb(), `Users/${user?.uid}/activity`), {
+        activity_title: 'check-in',
+        activity_type: 'work-hour-logs',
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+        employee_id: userDetails?.employee_id
+      })
+      setStats(prev => ({ ...prev, checkedIn: true }))
+    }
+    catch (err) {
+      console.log("error while checking in", err)
+    }
+    finally {
+      setProcessing(prev => ({ ...prev, checkIn: false }))
+    }
+  }
+  async function checkOut() {
+    if (processing.checkIn) return;
+    setProcessing(prev => ({ ...prev, checkIn: true }))
+    const instance = firestoreConfig.getInstance()
+    try {
+      await addDoc(collection(instance.getDb(), `Users/${user?.uid}/activity`), {
+        activity_title: 'check-out',
+        activity_type: 'work-hour-logs',
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+        employee_id: userDetails?.employee_id
+      })
+      setStats(prev=>({...prev,checkedOut:true}))
+    }
+    catch (err) {
+      console.log("error while checking in", err)
+    }
+    finally{
+      setProcessing(prev => ({ ...prev, checkIn: false }))
+    }
+  }
+
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const start = new Date()
+        start.setHours(0, 0, 0, 0);
+        const now = new Date()
+        const instance = firestoreConfig.getInstance();
+        const docSnap = await getDocs(query(collection(instance.getDb(), `Users/${user?.uid}/activity`), where('activity_title', '==', 'check-in'), where('created_at', '>=', start), where('created_at', '<=', now)));
+        if (docSnap.docs.length > 0) {
+          setStats(prev => ({ ...prev, checkedIn: true }))
+        }
+        const checkOutSnap = await getDocs(query(collection(instance.getDb(), `Users/${user?.uid}/activity`), where('activity_title', '==', 'check-out'), where('created_at', '>=', start)))
+        if (checkOutSnap.docs.length > 0) {
+          setStats(prev => ({ ...prev, checkedOut: true }))
+        }
+        setLoading(false)
+      }
+      catch(err){
+        console.log("error while fetching employee matrix",err)
+      }
+    })()
+  },[])
+
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md">
-      <h2 className="text-xl font-bold mb-4 text-blue-700">Check-In / Check-Out</h2>
-      <p className="mb-4">Current Status: <span className="font-semibold">{status}</span></p>
-
-      <div className="flex gap-4">
-        <button onClick={handleCheckIn} className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600">
-          Check In
-        </button>
-        <button onClick={handleCheckOut} className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600">
-          Check Out
-        </button>
-      </div>
+    <div>
     </div>
   );
 }
