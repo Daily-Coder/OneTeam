@@ -50,39 +50,7 @@ export default function TicketsSection(): React.JSX.Element {
 
   const [myTicets, setMyTickets] = useState<DocumentData[]>([]);
   const [ticketsFetched, setTicketsFetched] = useState<boolean>(false)
-  // Mock data for previous tickets - replace with actual API calls
-  const [previousTickets] = useState<Ticket[]>([
-    {
-      id: '1',
-      title: 'Software Installation Request',
-      description: 'Need help installing new development tools on my machine',
-      priority: 'Medium',
-      category: 'IT Support',
-      status: 'In Progress',
-      createdAt: '2024-01-15',
-      updatedAt: '2024-01-16'
-    },
-    {
-      id: '2',
-      title: 'Access Permission Issue',
-      description: 'Cannot access the shared drive for project files',
-      priority: 'High',
-      category: 'Access Management',
-      status: 'Resolved',
-      createdAt: '2024-01-10',
-      updatedAt: '2024-01-12'
-    },
-    {
-      id: '3',
-      title: 'Email Configuration',
-      description: 'Email client not syncing properly with company server',
-      priority: 'Low',
-      category: 'IT Support',
-      status: 'Open',
-      createdAt: '2024-01-18',
-      updatedAt: '2024-01-18'
-    }
-  ]);
+ 
   const [processing, setProcessing] = useState<boolean>(false)
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
