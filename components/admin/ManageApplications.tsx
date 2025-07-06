@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DocumentData } from "firebase-admin/firestore";
-import { FilePlus, CheckCircle, ListChecks, User, Calendar, Clock, RefreshCw, AlertCircle, CheckSquare, XCircle, Folder } from "lucide-react";
+import { FilePlus, CheckCircle,  User, Calendar, Clock, RefreshCw, AlertCircle, CheckSquare, XCircle, Folder } from "lucide-react";
 import { useState, useEffect } from "react";
 import { firestoreConfig } from "@/config/firestoreConfig";
 import { getDocs, query, collection, where, updateDoc, doc } from "firebase/firestore";
@@ -135,18 +135,18 @@ export default function ManageApplications() {
     }
   };
 
-  const getDurationColor = (duration: string) => {
-    switch (duration.toLowerCase()) {
-      case 'half-day':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'full-day':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'multiple-days':
-        return 'bg-teal-100 text-teal-800 border-teal-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+  // const getDurationColor = (duration: string) => {
+  //   switch (duration.toLowerCase()) {
+  //     case 'half-day':
+  //       return 'bg-blue-100 text-blue-800 border-blue-200';
+  //     case 'full-day':
+  //       return 'bg-purple-100 text-purple-800 border-purple-200';
+  //     case 'multiple-days':
+  //       return 'bg-teal-100 text-teal-800 border-teal-200';
+  //     default:
+  //       return 'bg-gray-100 text-gray-800 border-gray-200';
+  //   }
+  // };
 
   useEffect(() => {
     fetchApplications();

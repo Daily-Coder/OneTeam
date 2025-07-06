@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, LogIn, LogOut, CheckCircle, AlertCircle, RefreshCw, TrendingUp, Calendar } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface AttendanceRecord {
   date: string;
@@ -59,7 +59,7 @@ export default function CheckInOut() {
       const checkOutMinute = checkOutTime.getMinutes();
       const checkOutTotalMinutes = checkOutHour * 60 + checkOutMinute;
       
-      const normalEndThreshold = 17 * 60; // 5:00 PM in minutes
+      // const normalEndThreshold = 17 * 60; // 5:00 PM in minutes
       const overtimeThreshold = 17.5 * 60; // 5:30 PM in minutes
       
       if (checkOutTotalMinutes > overtimeThreshold) {

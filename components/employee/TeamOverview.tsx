@@ -26,10 +26,6 @@ function getDeadlineStatus(deadline: Timestamp | undefined) {
   return { label: 'Upcoming', color: 'bg-green-100 text-green-600' };
 }
 
-const teams = [
-  { id: 1, name: "UI Team", manager: "Raj Mehra", members: 5 },
-  { id: 2, name: "API Team", manager: "Sonal Gupta", members: 4 },
-];
 
 export default function TeamOverview() {
 

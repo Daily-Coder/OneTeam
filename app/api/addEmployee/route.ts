@@ -16,7 +16,7 @@ export async function POST(request: Request) {
             })
         }
         const newEmployeeId=newUser.uid
-        const newUserRec=await instance.getDb().collection('Users').doc(newEmployeeId).set({
+        await instance.getDb().collection('Users').doc(newEmployeeId).set({
             employee_id:employee_id,
             address:null,
             contact:contact,
