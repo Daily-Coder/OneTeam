@@ -18,29 +18,41 @@ export default function ProfileSection() {
       : "—";
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 max-w-3xl mx-auto">
-      {/* Header with Avatar */}
-      <div className="flex items-center gap-4 mb-6">
-        <Avatar className="h-14 w-14">
-          <AvatarFallback>
-            {userDetails?.name?.[0] || "E"}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h2 className="text-2xl font-bold text-blue-700">{userDetails?.name || "—"}</h2>
-          <p className="text-gray-500">{userDetails?.current_role || userDetails?.role || "—"}</p>
-        </div>
-      </div>
+    <div className="bg-gradient-to-br from-blue-50 to-white p-[2px] rounded-3xl shadow-lg max-w-4xl mx-auto mt-10">
+      <div className="bg-white rounded-[22px] p-8 sm:p-10">
+        {/* Header with Avatar */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-10">
+          <div className="relative w-20 h-20">
+            <Avatar className="w-full h-full ring-4 ring-blue-200 shadow-md">
+              <AvatarFallback className="text-lg">
+                {userDetails?.name?.[0] || "E"}
+              </AvatarFallback>
+            </Avatar>
+          </div>
 
-      {/* Grid Profile Details */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm text-gray-700">
-        <ProfileRow label="Email / Employee ID" value={userDetails?.employee_id || userDetails?.personal_email} copyable />
-        <ProfileRow label="Team" value={userDetails?.team} />
-        <ProfileRow label="Department" value={userDetails?.department} />
-        <ProfileRow label="Status" value={userDetails?.current_status} highlightStatus />
-        <ProfileRow label="Organization" value={userDetails?.organization_name} />
-        <ProfileRow label="Joining Date" value={formatDate(userDetails?.joining_date)} />
-        <ProfileRow label="Yearly Leaves" value={userDetails?.yearly_leaves?.toString()} />
+          <div>
+            <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
+              {userDetails?.name || "—"}
+            </h2>
+            <p className="text-blue-600 font-medium mt-1">
+              {userDetails?.current_role || userDetails?.role || "—"}
+            </p>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-dashed border-gray-200 mb-6" />
+
+        {/* Profile Details Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6 text-sm text-gray-700">
+          <ProfileRow label="Email / Employee ID" value={userDetails?.employee_id || userDetails?.personal_email} copyable />
+          <ProfileRow label="Team" value={userDetails?.team} />
+          <ProfileRow label="Department" value={userDetails?.department} />
+          <ProfileRow label="Status" value={userDetails?.current_status} highlightStatus />
+          <ProfileRow label="Organization" value={userDetails?.organization_name} />
+          <ProfileRow label="Joining Date" value={formatDate(userDetails?.joining_date)} />
+          <ProfileRow label="Yearly Leaves" value={userDetails?.yearly_leaves?.toString()} />
+        </div>
       </div>
     </div>
   );
@@ -62,29 +74,35 @@ function ProfileRow({
   };
 
   return (
-    <div className="flex items-start justify-between gap-2">
+    <div className="flex items-start justify-between gap-3 group">
       <div>
-        <p className="text-gray-500 font-medium">{label}</p>
+        <p className="text-gray-500 font-medium mb-1">{label}</p>
         {highlightStatus ? (
           <span
-            className={`inline-block mt-1 text-xs px-2 py-1 rounded-full font-semibold ${
+            className={`inline-block text-xs px-2 py-1 rounded-full font-semibold transition ${
               value === "Active"
                 ? "bg-green-100 text-green-700"
                 : value === "Inactive"
-                ? "bg-gray-200 text-gray-600"
+                ? "bg-gray-100 text-gray-600"
                 : "bg-yellow-100 text-yellow-800"
             }`}
           >
             {value || "—"}
           </span>
         ) : (
-          <p className="text-gray-800">{value || "—"}</p>
+          <p className="text-gray-900 text-sm">{value || "—"}</p>
         )}
       </div>
 
       {copyable && value && (
-        <Button variant="ghost" size="icon" onClick={handleCopy} title="Copy to clipboard">
-          <ClipboardCopy className="h-4 w-4 text-gray-500" />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleCopy}
+          title="Copy to clipboard"
+          className="opacity-0 group-hover:opacity-100 transition"
+        >
+          <ClipboardCopy className="h-4 w-4 text-gray-400 hover:text-gray-600" />
         </Button>
       )}
     </div>
