@@ -1,6 +1,6 @@
 'use client';
 import { useAuth } from "@/context/authContext";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Clock, Users, User, LogOut, CalendarDays, Ticket } from "lucide-react";
 
 interface Props {
@@ -10,7 +10,6 @@ interface Props {
 
 export default function EmployeeSidebar({ active, setActive }: Props) {
   const { signOut } = useAuth();
-  const router = useRouter();
 
   return (
     <aside className="w-64 min-h-screen bg-white border-r p-4 flex flex-col justify-between">

@@ -2,7 +2,6 @@
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -18,9 +17,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useMemo, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import {useState } from "react"
+// import { Button } from "@/components/ui/button"
+// import { PlusCircle } from "lucide-react"
 import { DocumentData } from "firebase-admin/firestore"
 import { Textarea } from "@/components/ui/textarea"
 import { TfiControlBackward } from "react-icons/tfi";
@@ -60,7 +59,7 @@ export default function AddNewTeam() {
         try {
             if (processing) return;
             setProcessing(true)
-            const newTeam = await addDoc(collection(instance.getDb(), 'Teams'), {
+             await addDoc(collection(instance.getDb(), 'Teams'), {
                 organization_name: userDetails?.organization_name,
                 team_name: teamDetails.teamName,
                 team_lead: teamDetails.teamLead,
@@ -122,7 +121,7 @@ export default function AddNewTeam() {
                                 setEmployeesFetched(true)
                             }
                             catch (err) {
-                                console.log("error while fetching employees for creating new team")
+                                console.log("error while fetching employees for creating new team",err)
                             }
                         }}>
                             <SelectTrigger className="w-full">

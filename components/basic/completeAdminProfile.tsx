@@ -1,6 +1,6 @@
 import { firestoreConfig } from "@/config/firestoreConfig";
 import { useAuth } from "@/context/authContext";
-import { addDoc, collection, doc, DocumentData, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
+import {  collection, doc, DocumentData, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 

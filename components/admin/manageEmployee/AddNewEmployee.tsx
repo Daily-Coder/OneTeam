@@ -17,7 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useRef, useState } from "react"
+import {  useState } from "react"
 
 
 export default function AddNewEmployee() {
@@ -76,7 +76,7 @@ export default function AddNewEmployee() {
         }
         catch (err) {
             setLoading(false)
-            console.log("error in api call")
+            console.log("error in api call",err)
         }
         finally{
             setLoading(false)
