@@ -2,9 +2,35 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DocumentData } from "firebase-admin/firestore";
 import { FilePlus, CheckCircle, ListChecks } from "lucide-react";
+import { useState,useEffect } from "react";
+import { firestoreConfig } from "@/config/firestoreConfig";
+import { getDocs,query,collection,where } from "firebase/firestore";
+import { useUser } from "@/context/userContext";
 
 export default function ManageApplications() {
+
+
+  const [myApplications, setMyApplications] = useState<DocumentData[]>([]);
+  const [applicationsFetched, setApplicationsFetched] = useState<boolean>(false);
+  const {userDetails}=useUser();
+  
+  useEffect(() => {
+    (async () => {
+      const instance = firestoreConfig.getInstance();
+      try {
+        const docSnap = await getDocs(query(collection(instance.getDb(), 'Leaves'), where('organization_name', '==', userDetails?.organization_name)));
+        const temp: DocumentData[] = []
+        docSnap.docs.map(doc => temp.push({ id: doc.id, ...doc.data() }));
+        setMyApplications(temp)
+        setApplicationsFetched(true)
+      }
+      catch (err) {
+        console.log("error while fetching applications", err);
+      }
+    })()
+  }, [])
   return (
     <main className="min-h-screen w-full bg-muted p-6">
       {/* Header */}

@@ -1,132 +1,171 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { PlusCircle, Pencil, Trash } from 'lucide-react';
-
-type Ticket = {
-  id: number;
-  title: string;
-  description: string;
-};
+import { firestoreConfig } from '@/config/firestoreConfig';
+import { collection, getDocs, query, where, DocumentData, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { useUser } from '@/context/userContext';
 
 export default function ManageTickets() {
-  const [tickets, setTickets] = useState<Ticket[]>([
-    { id: 1, title: 'Laptop Not Booting', description: 'Device shuts down immediately.' },
-    { id: 2, title: 'VPN Access Request', description: 'Need access to internal tools remotely.' },
-  ]);
+  const { userDetails } = useUser();
+  const [myTickets, setMyTickets] = useState<DocumentData[]>([]);
+  const [ticketsFetched, setTicketsFetched] = useState(false);
 
-  const [form, setForm] = useState({ title: '', description: '' });
-  const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
 
-  const handleSave = () => {
-    if (editingTicket) {
-      // Update existing ticket
-      setTickets((prev) =>
-        prev.map((t) =>
-          t.id === editingTicket.id ? { ...t, ...form } : t
-        )
-      );
-    } else {
-      // Add new ticket
-      const newTicket: Ticket = {
-        id: Date.now(),
-        title: form.title,
-        description: form.description,
-      };
-      setTickets((prev) => [...prev, newTicket]);
+  async function markTicketAsResolved(id:string) {
+    const instance=firestoreConfig.getInstance()
+    try{
+      console.log("process started")
+      await updateDoc(doc(collection(instance.getDb(),'Tickets'),id),{
+        status:'resolved',
+        updated_at:serverTimestamp()
+      })
+      const updatedTickets=myTickets.map(t=>{
+        if(t.id===id){
+          return {
+            ...t,
+            status:'resolved',
+          }
+        }
+        return t
+      })
+      setMyTickets(updatedTickets)
+      console.log('process ended')
     }
+    catch(err){
+      console.log("error while marking as resolved",err)
+    }
+  }
+  useEffect(() => {
+    (async () => {
+      try {
+        const instance = firestoreConfig.getInstance();
+        const q = query(
+          collection(instance.getDb(), 'Tickets'),
+          where('organization_name', '==', userDetails?.organization_name)
+        );
 
-    setForm({ title: '', description: '' });
-    setEditingTicket(null);
+        const snap = await getDocs(q);
+        const temp: DocumentData[] = [];
+        snap.docs.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
+        setMyTickets(temp);
+      } catch (err) {
+        console.error('Error fetching tickets:', err);
+      } finally {
+        setTicketsFetched(true);
+      }
+    })();
+  }, [userDetails]);
+
+  const statusColor: Record<string, string> = {
+    open: 'bg-yellow-100 text-yellow-700',
+    resolved: 'bg-green-100 text-green-700',
+    'in‑progress': 'bg-blue-100 text-blue-700',
   };
 
-  const handleEdit = (ticket: Ticket) => {
-    setEditingTicket(ticket);
-    setForm({ title: ticket.title, description: ticket.description });
+  const priorityColor: Record<string, string> = {
+    Low: 'bg-gray-100 text-gray-600',
+    Medium: 'bg-yellow-100 text-yellow-600',
+    High: 'bg-orange-100 text-orange-600',
+    Critical: 'bg-red-100 text-red-600',
   };
 
-  const handleDelete = (id: number) => {
-    setTickets((prev) => prev.filter((t) => t.id !== id));
-  };
+  const formatDate = (ts?: any) =>
+    ts?.toDate().toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+
+
 
   return (
-    <main className="min-h-screen w-full bg-muted p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Manage Tickets</h1>
-      </div>
+    <main className="h-screen overflow-hidden bg-muted p-6">
+      <header className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-foreground">Tickets Overview</h1>
+      </header>
 
-      {/* Ticket List */}
-      {tickets.length === 0 ? (
-        <div className="text-center mt-20 text-muted-foreground text-lg">
-          No tickets to display. Click "Create Ticket" to add one.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tickets.map((ticket) => (
-            <Card key={ticket.id}>
-              <CardContent className="p-4 space-y-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-lg font-semibold text-foreground">{ticket.title}</p>
-                    <p className="text-sm text-muted-foreground">{ticket.description}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(ticket)}
-                        >
-                          <Pencil className="h-4 w-4 text-blue-600" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Edit Ticket</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <Input
-                            placeholder="Ticket Title"
-                            value={form.title}
-                            onChange={(e) => setForm({ ...form, title: e.target.value })}
-                          />
-                          <Textarea
-                            placeholder="Ticket Description"
-                            value={form.description}
-                            onChange={(e) => setForm({ ...form, description: e.target.value })}
-                          />
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleSave}>Update</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(ticket.id)}
-                    >
-                      <Trash className="h-4 w-4 text-red-600" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
+      {!ticketsFetched ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="h-40 bg-gray-100 rounded-lg" />
             </Card>
           ))}
+        </div>
+      ) : myTickets.length === 0 ? (
+        <div className="flex items-center justify-center h-[60vh]">
+          <p className="text-lg text-gray-500 text-center">
+            No tickets found for this organization.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto pr-2">
+          {myTickets.map((ticket) => {
+            const status = ticket.status?.toLowerCase() || 'open';
+
+            return (
+              <Card
+                key={ticket.id}
+                className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <CardContent className="p-5 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <h3
+                      className="font-semibold text-lg text-gray-800 truncate max-w-[85%]"
+                      title={ticket.title}
+                    >
+                      {ticket.title}
+                    </h3>
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-full capitalize ${statusColor[status]}`}
+                    >
+                      {ticket.status}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${priorityColor[
+                        ticket.priority || 'Low'
+                      ]}`}
+                    >
+                      {ticket.priority}
+                    </span>
+                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-600">
+                      {ticket.category}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-gray-700 line-clamp-3">{ticket.description}</p>
+
+                  <div className="text-xs text-gray-500 flex flex-wrap gap-x-4">
+                    <span>Created: {formatDate(ticket.created_at)}</span>
+                    <span>Updated: {formatDate(ticket.updated_at)}</span>
+                  </div>
+
+                  {status === 'resolved' ? (
+                    <div className="flex items-center justify-center text-green-700 text-sm font-medium">
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Resolved
+                    </div>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-1 text-green-600 hover:bg-green-50 w-full justify-center cursor-pointer"
+                      onClick={()=>markTicketAsResolved(ticket.id)}
+                    >
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Mark as Resolved
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </main>
