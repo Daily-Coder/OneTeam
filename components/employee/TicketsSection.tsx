@@ -195,13 +195,7 @@ export default function TicketsSection(): React.JSX.Element {
   return (
     <div className="space-y-6">
       {/* Raise Ticket Section */}
-      <Card className="w-full mx-auto">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold text-blue-700">
-            Ticket Management
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          <p className='px-2 pt-10 text-xl font-bold text-blue-700'>Ticket Management</p>
           <div className="text-center space-y-4">
             <p className="text-gray-600">
               Raise a new support ticket or request assistance. Click the button below to create a ticket.
@@ -320,17 +314,10 @@ export default function TicketsSection(): React.JSX.Element {
               </DialogContent>
             </Dialog>
           </div>
-        </CardContent>
-      </Card>
+
 
       {/* Previous Tickets Section */}
-      <Card className="w-full mx-auto">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold text-blue-700">
-            Previous Tickets
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          <p className='px-2 pt-10 text-xl font-bold text-blue-700'>My Past Tickets</p>
           <div className="space-y-4">
             {!ticketsFetched ? <p className="text-center text-gray-500 py-8"> Getting your data</p> : 
             
@@ -367,8 +354,7 @@ export default function TicketsSection(): React.JSX.Element {
               ))
             )}
           </div>
-        </CardContent>
-      </Card>
+
     </div>
   );
 }
