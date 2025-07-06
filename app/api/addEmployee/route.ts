@@ -28,8 +28,8 @@ export async function POST(request: Request) {
             organization_name:organizationName,
             personal_email:personal_email,
             role:'employee',
-            temp:null,
-            temp_role:null,
+            team:null,
+            team_role:null,
             yearly_leaves:30,
             department:department
         })

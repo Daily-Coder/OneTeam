@@ -345,9 +345,8 @@ export default function TicketsSection(): React.JSX.Element {
                       {ticket.category}
                     </span>
                     <div className="flex gap-4">
-                      <span>Created: {ticket.created_at?.toDate().toLocaleDateString()}</span>
-                      <span>Updated: {ticket.updated_at?.toDate().toLocaleDateString()}</span>
-
+                      <span>Created: {ticket.created_at instanceof Date ? ticket.created_at.toLocaleDateString():ticket.created_at.toDate().toLocaleDateString()}</span>
+                      <span>Updated: {ticket.created_at instanceof Date ? ticket.created_at.toLocaleDateString():ticket.created_at.toDate().toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
