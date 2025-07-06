@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { firestoreConfig } from '@/config/firestoreConfig';
+import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
+import { useAuth } from '@/context/authContext';
+import { useUser } from '@/context/userContext';
+import { DocumentData } from 'firebase-admin/firestore';
 
 interface TicketData {
   title: string;
@@ -40,7 +45,11 @@ export default function TicketsSection(): React.JSX.Element {
     category: ''
   });
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const { user } = useAuth()
+  const { userDetails } = useUser();
 
+  const [myTicets, setMyTickets] = useState<DocumentData[]>([]);
+  const [ticketsFetched, setTicketsFetched] = useState<boolean>(false)
   // Mock data for previous tickets - replace with actual API calls
   const [previousTickets] = useState<Ticket[]>([
     {
@@ -74,7 +83,7 @@ export default function TicketsSection(): React.JSX.Element {
       updatedAt: '2024-01-18'
     }
   ]);
-
+  const [processing, setProcessing] = useState<boolean>(false)
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
     setTicketData(prev => ({
@@ -83,20 +92,46 @@ export default function TicketsSection(): React.JSX.Element {
     }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    console.log('Ticket submitted:', ticketData);
-    // Here you would typically send the data to your backend
-    alert('Ticket submitted successfully!');
-    
-    // Reset form and close dialog
-    setTicketData({
-      title: '',
-      description: '',
-      priority: '',
-      category: ''
-    });
-    setIsDialogOpen(false);
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault()
+    if (processing) return;
+    setProcessing(true)
+    const instance = firestoreConfig.getInstance()
+    try {
+      const payload = {
+        employee_id: userDetails?.employee_id,
+        employee_user_id: user?.uid,
+        title: ticketData.title,
+        description: ticketData.description,
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+        status: 'open',
+        category: ticketData.category,
+        priority: ticketData.priority,
+        organization_name: userDetails?.organization_name
+      }
+      const newDoc = await addDoc(collection(instance.getDb(), 'Tickets'), payload)
+      const newPayload = {
+        ...payload,
+        created_at: new Date(),
+        updated_at: new Date()
+      }
+      setMyTickets(prev => ([{ id: newDoc.id, ...newPayload }, ...prev]))
+      setTicketData(prev => ({
+        ...prev,
+        title: '',
+        description: '',
+        priority: '',
+        category: ''
+      }))
+      setIsDialogOpen(false)
+    }
+    catch (err) {
+      console.log("error while raising a new ticket", err)
+    }
+    finally {
+      setProcessing(false)
+    }
   };
 
   const handleCancel = (): void => {
@@ -127,8 +162,10 @@ export default function TicketsSection(): React.JSX.Element {
 
   const getPriorityColor = (priority: string): string => {
     switch (priority.toLowerCase()) {
-      case 'high':
+      case 'critical':
         return 'bg-red-100 text-red-800';
+      case 'high':
+        return 'bg-red-100 text-orange-800';
       case 'medium':
         return 'bg-yellow-100 text-yellow-800';
       case 'low':
@@ -138,10 +175,27 @@ export default function TicketsSection(): React.JSX.Element {
     }
   };
 
+
+  useEffect(() => {
+    (async () => {
+      const instance = firestoreConfig.getInstance()
+      try {
+        const docSnap = await getDocs(query(collection(instance.getDb(), 'Tickets'), where('organization_name', '==', userDetails?.organization_name), where('employee_user_id', '==', user?.uid)));
+        console.log(docSnap.docs.length)
+        const temp: DocumentData[] = []
+        docSnap.docs.map(doc => temp.push({ id: doc.id, ...doc.data() }))
+        setMyTickets(temp)
+        setTicketsFetched(true)
+      }
+      catch (err) {
+        console.log("error while fetching tickets", err)
+      }
+    })()
+  }, [])
   return (
     <div className="space-y-6">
       {/* Raise Ticket Section */}
-      <Card className="w-full max-w-2xl mx-auto">
+      <Card className="w-full mx-auto">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-blue-700">
             Ticket Management
@@ -154,7 +208,7 @@ export default function TicketsSection(): React.JSX.Element {
             </p>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg cursor-pointer">
                   Raise New Ticket
                 </Button>
               </DialogTrigger>
@@ -167,7 +221,7 @@ export default function TicketsSection(): React.JSX.Element {
                     Please provide the details below to create your support ticket.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="title" className="text-sm font-medium text-gray-700">
@@ -223,7 +277,7 @@ export default function TicketsSection(): React.JSX.Element {
                         <option value="General Inquiry">General Inquiry</option>
                       </select>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <label htmlFor="priority" className="text-sm font-medium text-gray-700">
                         Priority
@@ -246,18 +300,20 @@ export default function TicketsSection(): React.JSX.Element {
                   </div>
 
                   <DialogFooter className="pt-4">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={handleCancel}
                     >
                       Cancel
                     </Button>
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      Submit Ticket
+                      {
+                        processing ? `Submitting...` : `Submit Ticket`
+                      }
                     </Button>
                   </DialogFooter>
                 </form>
@@ -268,7 +324,7 @@ export default function TicketsSection(): React.JSX.Element {
       </Card>
 
       {/* Previous Tickets Section */}
-      <Card className="w-full max-w-4xl mx-auto">
+      <Card className="w-full mx-auto">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-blue-700">
             Previous Tickets
@@ -276,10 +332,12 @@ export default function TicketsSection(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {previousTickets.length === 0 ? (
+            {!ticketsFetched ? <p className="text-center text-gray-500 py-8"> Getting your data</p> : 
+            
+            myTicets.length === 0 ? (
               <p className="text-center text-gray-500 py-8">No previous tickets found.</p>
             ) : (
-              previousTickets.map((ticket) => (
+              myTicets.map((ticket) => (
                 <div key={ticket.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="font-semibold text-lg text-gray-900">{ticket.title}</h3>
@@ -292,16 +350,17 @@ export default function TicketsSection(): React.JSX.Element {
                       </span>
                     </div>
                   </div>
-                  
+
                   <p className="text-gray-600 mb-3">{ticket.description}</p>
-                  
+
                   <div className="flex justify-between items-center text-sm text-gray-500">
                     <span className="bg-gray-100 px-2 py-1 rounded text-xs">
                       {ticket.category}
                     </span>
                     <div className="flex gap-4">
-                      <span>Created: {new Date(ticket.createdAt).toLocaleDateString()}</span>
-                      <span>Updated: {new Date(ticket.updatedAt).toLocaleDateString()}</span>
+                      <span>Created: {ticket.created_at?.toDate().toLocaleDateString()}</span>
+                      <span>Updated: {ticket.updated_at?.toDate().toLocaleDateString()}</span>
+
                     </div>
                   </div>
                 </div>

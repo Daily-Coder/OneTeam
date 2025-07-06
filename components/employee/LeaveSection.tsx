@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useAuth } from '@/context/authContext';
+import { useUser } from '@/context/userContext';
+import { firestoreConfig } from '@/config/firestoreConfig';
+import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
+import { DocumentData } from 'firebase-admin/firestore';
 
 interface LeaveData {
   leaveDate: string;
@@ -28,8 +33,10 @@ export default function LeaveSection(): React.JSX.Element {
     title: '',
     duration: ''
   });
+  const [myLeaves,setMyLeaves]=useState<DocumentData[]>([])
+  const [leavesFetched,setLeavesFetched]=useState<boolean>(false)
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-
+  const [processing,setProcessing]=useState<boolean>(false)
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target;
     setLeaveData(prev => ({
@@ -37,21 +44,49 @@ export default function LeaveSection(): React.JSX.Element {
       [name]: value
     }));
   };
+  const { user } = useAuth();
+  const { userDetails } = useUser();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async(e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    console.log('Leave request submitted:', leaveData);
-    // Here you would typically send the data to your backend
-    alert('Leave request submitted successfully!');
-    
-    // Reset form and close dialog
-    setLeaveData({
-      leaveDate: '',
-      leaveDuration: '',
-      title: '',
-      duration: ''
-    });
-    setIsDialogOpen(false);
+    if(processing) return;
+    setProcessing(true)
+    const instance = firestoreConfig.getInstance()
+    try {
+      const payload={
+        employee_id:userDetails?.employee_id,
+        organization_name:userDetails?.organization_name,
+        employee_user_id:user?.uid,
+        status:'pending',
+        title:leaveData.title,
+        leave_duration:leaveData.leaveDuration,
+        number_of_days:leaveData.duration,
+        created_at:serverTimestamp(),
+        updated_at:serverTimestamp(),
+        leave_date:new Date(leaveData.leaveDate)
+      }
+      const newDoc=await addDoc(collection(instance.getDb(),'Leaves'),payload)
+      const newPayload={
+        ...payload,
+        created_at:new Date(),
+        updated_at:new Date(),
+        leave_date:new Date(leaveData.leaveDate)
+      }
+      setMyLeaves(prev=>([{id:newDoc.id,...newPayload},...prev]))
+      setLeaveData({
+        leaveDate: '',
+        leaveDuration: '',
+        title: '',
+        duration: ''
+      });
+      setIsDialogOpen(false);
+    }
+    catch (err) {
+      console.log("error while creating leave", err)
+    }
+    finally{
+      setProcessing(false)
+    }
   };
 
   const handleCancel = (): void => {
@@ -65,6 +100,22 @@ export default function LeaveSection(): React.JSX.Element {
     setIsDialogOpen(false);
   };
 
+
+  useEffect(()=>{
+    (async()=>{
+      const instance=firestoreConfig.getInstance();
+      try{
+        const docSnap=await getDocs(query(collection(instance.getDb(),'Leaves'),where('employee_user_id','==',user?.uid)));
+        const temp:DocumentData[]=[]
+        docSnap.docs.map(doc=>temp.push({id:doc.id,...doc.data()}))
+        setMyLeaves(temp)
+        setLeavesFetched(true)
+      }
+      catch(err){
+        console.log("error while fetching your leaves",err)
+      }
+    })()
+  },[])
   return (
     <div className="space-y-6">
       <Card className="w-full max-w-2xl mx-auto">
@@ -93,7 +144,7 @@ export default function LeaveSection(): React.JSX.Element {
                     Please fill in the details below to submit your leave request.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -110,7 +161,7 @@ export default function LeaveSection(): React.JSX.Element {
                         className="w-full"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <label htmlFor="leaveDuration" className="text-sm font-medium text-gray-700">
                         Leave Duration
@@ -166,18 +217,20 @@ export default function LeaveSection(): React.JSX.Element {
                   </div>
 
                   <DialogFooter className="pt-4">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={handleCancel}
                     >
                       Cancel
                     </Button>
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      Submit Request
+                      {
+                        processing ? `Submitting...` : `Submit Request`
+                      }
                     </Button>
                   </DialogFooter>
                 </form>

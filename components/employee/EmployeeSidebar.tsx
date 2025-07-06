@@ -17,23 +17,23 @@ export default function EmployeeSidebar({ active, setActive }: Props) {
       <div>
         <h1 className="text-xl font-bold text-gray-800 mb-6 px-2">Employee Panel</h1>
         <nav className="space-y-2">
-          <button onClick={() => setActive("checkin")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "checkin" && "bg-blue-100 font-bold"}`}>
+          <button onClick={() => setActive("checkin")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "checkin" && "bg-blue-100"}`}>
             <Clock className="w-5 h-5" />
             Check-In/Out
           </button>
-          <button onClick={() => setActive("teams")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "teams" && "bg-blue-100 font-bold"}`}>
+          <button onClick={() => setActive("teams")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "teams" && "bg-blue-100 "}`}>
             <Users className="w-5 h-5" />
             Teams
           </button>
-          <button onClick={() => setActive("profile")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "profile" && "bg-blue-100 font-bold"}`}>
+          <button onClick={() => setActive("profile")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "profile" && "bg-blue-100"}`}>
             <User className="w-5 h-5" />
             Profile
           </button>
-          <button onClick={() => setActive("leave")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "leave" && "bg-blue-100 font-bold"}`}>
+          <button onClick={() => setActive("leave")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "leave" && "bg-blue-100 "}`}>
             <CalendarDays className="w-5 h-5" />
             Leave
           </button>
-          <button onClick={() => setActive("tickets")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "tickets" && "bg-blue-100 font-bold"}`}>
+          <button onClick={() => setActive("tickets")} className={`w-full text-left px-4 py-2 rounded-md hover:bg-blue-100 flex items-center gap-3 ${active === "tickets" && "bg-blue-100"}`}>
             <Ticket className="w-5 h-5" />
             Tickets
           </button>
