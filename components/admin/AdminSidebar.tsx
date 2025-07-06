@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import { useAuth } from "@/context/authContext";
 
 export default function AdminSidebar() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const {activeRoute,setActiveRoute}=useAdminRoute();
   const {signOut}=useAuth();
 
@@ -30,7 +29,7 @@ export default function AdminSidebar() {
             <nav className="space-y-2">
               {adminRoutes.map((route, index) => {
                 return (
-                  <div className="px-5 py-3 rounded-md" onClick={() => setActiveRoute(route.value)}>
+                  <div key={index} className="px-5 py-3 rounded-md" onClick={() => setActiveRoute(route.value) }>
                     <route.icon />
                     <p>{route.title}</p>
                   </div>

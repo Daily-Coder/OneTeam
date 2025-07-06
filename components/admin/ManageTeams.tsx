@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
-import { Pencil, PlusCircle, Trash, Users, Calendar, RefreshCw, Folder, Crown, Building2, Target, Clock } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Pencil, Trash, Users, RefreshCw, Folder, Crown, Target, Clock } from 'lucide-react';
 import AddNewTeam from './manageTeams/AddNewTeam';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestoreConfig } from '@/config/firestoreConfig';

@@ -2,15 +2,11 @@
 
 import { useAuth } from "@/context/authContext";
 import { useEffect, useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  CalendarCheck,
   BarChart2,
-  Ticket,
-  Activity,
-  LucideIcon,
   Users,
 } from "lucide-react";
 import { useUser } from "@/context/userContext";
@@ -19,74 +15,12 @@ import { firestoreConfig } from "@/config/firestoreConfig";
 import AddNewEmployee from "./manageEmployee/AddNewEmployee";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-// Types
-type Stat = {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-};
-
-type ActivityLog = {
-  title: string;
-  description: string;
-  date: string;
-};
-
-type EmployeeProfile = {
-  name: string;
-  stats: Stat[];
-  activities: ActivityLog[];
-};
-
-type DepartmentData = {
-  name: string;
-  count: number;
-};
-
-const employeeData: Record<string, EmployeeProfile> = {
-  EMP001: {
-    name: "Gourav",
-    stats: [
-      { icon: CalendarCheck, label: "Leaves Taken", value: "8 / 24" },
-      { icon: BarChart2, label: "Performance Score", value: "92%" },
-      { icon: Ticket, label: "Tickets Raised", value: "3" },
-    ],
-    activities: [
-      {
-        title: "Leave Approved",
-        description: "Your leave request from July 3–5 was approved.",
-        date: "July 1, 2025",
-      },
-      {
-        title: "Ticket Resolved",
-        description: "Laptop issue resolved by IT support.",
-        date: "June 29, 2025",
-      },
-    ],
-  },
-  EMP002: {
-    name: "Aarav",
-    stats: [
-      { icon: CalendarCheck, label: "Leaves Taken", value: "12 / 24" },
-      { icon: BarChart2, label: "Performance Score", value: "88%" },
-      { icon: Ticket, label: "Tickets Raised", value: "1" },
-    ],
-    activities: [
-      {
-        title: "Performance Updated",
-        description: "Q2 review completed by manager.",
-        date: "June 28, 2025",
-      },
-    ],
-  },
-};
-
 // Colors for the chart
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF6B6B'];
 
 export default function EmployeeDashboard() {
-  const [searchId, setSearchId] = useState<string>("");
-  const [selectedId, setSelectedId] = useState<string>("EMP001");
+  // const [searchId, setSearchId] = useState<string>("");
+  // const [selectedId, setSelectedId] = useState<string>("EMP001");
   const {userDetails}=useUser();
   const [employees,setEmployees]=useState<DocumentData[]>([])
   const [employeesFetched,setEmployeesFetched]=useState<boolean>(false)
@@ -107,7 +41,8 @@ export default function EmployeeDashboard() {
         setEmployeesFetched(true)
       }
       catch(err){
-        alert("something went wrong")
+        alert("something went wrong");
+        console.log(err);
       }
     })()
   },[])
