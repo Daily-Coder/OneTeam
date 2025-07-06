@@ -88,6 +88,35 @@ export default function LeaveSection(): React.JSX.Element {
       setProcessing(false)
     }
   };
+  //   const getStatusColor = (status: string): string => {
+  //   switch (status.toLowerCase()) {
+  //     case 'open':
+  //       return 'bg-yellow-100 text-yellow-800';
+  //     case 'in progress':
+  //       return 'bg-blue-100 text-blue-800';
+  //     case 'resolved':
+  //       return 'bg-green-100 text-green-800';
+  //     case 'closed':
+  //       return 'bg-gray-100 text-gray-800';
+  //     default:
+  //       return 'bg-gray-100 text-gray-800';
+  //   }
+  // };
+
+  // const getPriorityColor = (priority: string): string => {
+  //   switch (priority.toLowerCase()) {
+  //     case 'critical':
+  //       return 'bg-red-100 text-red-800';
+  //     case 'high':
+  //       return 'bg-red-100 text-orange-800';
+  //     case 'medium':
+  //       return 'bg-yellow-100 text-yellow-800';
+  //     case 'low':
+  //       return 'bg-green-100 text-green-800';
+  //     default:
+  //       return 'bg-gray-100 text-gray-800';
+  //   }
+  // };
 
   const handleCancel = (): void => {
     // Reset form and close dialog
@@ -239,6 +268,53 @@ export default function LeaveSection(): React.JSX.Element {
           </div>
         </CardContent>
       </Card>
+
+                        <p className='px-2 pt-10 text-xl font-bold text-blue-700'>My Past Tickets</p>
+          <div className="space-y-4">
+            {!leavesFetched ? <p className="text-center text-gray-500 py-8"> Getting your data</p> : 
+            
+            myLeaves.length === 0 ? (
+              <p className="text-center text-gray-500 py-8">No previous tickets found.</p>
+            ) : (
+              myLeaves.map((leave) => (
+                <div key={leave.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-semibold text-lg text-gray-900">{leave.title}</h3>
+                    <div className="flex gap-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium `}>
+                        {leave.leave_duration}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium `}>
+                        {leave.status}
+                      </span>
+                    </div>
+                  </div>
+                
+                  <p className="text-gray-600 mb-3">{leave.number_of_days}</p>
+
+                  <div className="flex justify-between items-center text-sm text-gray-500">
+                    <span className="bg-gray-100 px-2 py-1 rounded text-xs">
+                      {leave.employee_id}
+                    </span>
+                    <div className="flex gap-4">
+                      <span>Created: {leave.created_at instanceof Date ? leave.created_at.toLocaleDateString():leave.created_at.toDate().toLocaleDateString()}</span>
+                      <span>Updated: {leave.created_at instanceof Date ? leave.created_at.toLocaleDateString():leave.created_at.toDate().toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+
+
+
+
+
+
+
+
+
     </div>
   );
 }
