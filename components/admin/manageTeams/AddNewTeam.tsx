@@ -129,7 +129,7 @@ export default function AddNewTeam() {
                             </SelectTrigger>
                             <SelectContent onSelect={(e) => console.log(e)}>
                                 <SelectItem value="Development">Development</SelectItem>
-                                <SelectItem value="Devops">DevOps</SelectItem>
+                                <SelectItem value="DevOps">DevOps</SelectItem>
                                 <SelectItem value="UI/UX">{`UI/UX (User Interface/User Experience)`}</SelectItem>
                                 <SelectItem value="Marketing">Marketing</SelectItem>
                                 <SelectItem value="HR">Human Resource</SelectItem>
